@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  MINISTRY
+  STATE_NODAL
+  DISTRICT_AUTHORITY
+  MP
+  IMPLEMENTING_AGENCY
+  CITIZEN
+}
+
+enum PermissionScope {
+  GLOBAL
+  STATE
+  DISTRICT
+  CONSTITUENCY
+  ASSIGNED
+}
+
+model User {
+  id            String         @id @default(cuid())
+  username      String         @unique
+  passwordHash  String
+  role          UserRole
+  fullName      String
+  officerId     String?        @unique
+  email         String?        @unique
+  phone         String?        @unique
+  designation   String?
+  state         String?
+  district      String?
+  house         String?
+  constituency  String?
+  agencyId      String?
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  refreshTokens RefreshToken[]
+  auditLogs     AuditLog[]
+}
+
+model RefreshToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  userId    String
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, revokedAt])
+}
+
+model Permission {
+  id        String          @id @default(cuid())
+  role      UserRole
+  action    String
+  allowed   Boolean         @default(false)
+  scope     PermissionScope @default(GLOBAL)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  @@unique([role, action])
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  userId     String?
+  action     String
+  resource   String?
+  resourceId String?
+  metadata   Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+}
