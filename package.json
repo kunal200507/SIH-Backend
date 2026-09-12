@@ -8,7 +8,7 @@
     "dev": "nodemon server/src/app.js",
     "start": "node server/src/app.js",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev",
+    "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:seed": "node prisma/seed.js",
     "test": "node --check server/src/app.js"
   },
