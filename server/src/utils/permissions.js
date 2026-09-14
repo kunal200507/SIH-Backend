@@ -5,6 +5,7 @@ const ACTIONS = [
   'review_recommendation', 'sanction_work', 'assign_implementing_agency', 'execute_work',
   'update_work_progress', 'upload_execution_documents', 'view_ai_alerts', 'investigate_anomaly',
   'inspect_works', 'generate_reports', 'file_grievance', 'track_grievance',
+  'manage_users',
 ];
 
 /** Checks whether a role has an allowed database permission for an action. */

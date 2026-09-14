@@ -14,9 +14,43 @@ async function register(req, res, next) {
   try { const result = await auth.registerCitizen(req.body); setTokens(res, result); res.status(201).json(result); } catch (error) { next(error); }
 }
 
+/** Creates a staff account and returns its generated first-time credentials. */
+async function registerStaff(req, res, next) {
+  try { res.status(201).json(await auth.registerStaff(req.body)); } catch (error) { next(error); }
+}
+
 /** Handles admin requests to provision staff accounts. */
 async function createStaff(req, res, next) {
-  try { res.status(201).json({ user: await auth.createStaff(req.body) }); } catch (error) { next(error); }
+  try { res.status(201).json(await auth.createStaff(req.body)); } catch (error) { next(error); }
+}
+
+/** Updates credentials for an existing staff account. */
+async function updateStaffCredentials(req, res, next) {
+  try { res.json({ user: await auth.adminUpdateUsername(req.params.id, req.body.username) }); } catch (error) { next(error); }
+}
+
+async function listStaffAccounts(req, res, next) {
+  try { res.json({ users: await auth.listStaffAccounts() }); } catch (error) { next(error); }
+}
+
+async function resetStaffPassword(req, res, next) {
+  try { res.json({ message: 'Password reset generated.', ...(await auth.adminResetPassword(req.params.id)) }); } catch (error) { next(error); }
+}
+
+async function setStaffStatus(req, res, next) {
+  try { res.json({ user: await auth.setStaffStatus(req.params.id, req.body.isActive) }); } catch (error) { next(error); }
+}
+
+async function setStaffRole(req, res, next) {
+  try { res.json({ user: await auth.setStaffRole(req.params.id, req.body.role) }); } catch (error) { next(error); }
+}
+
+async function updateOwnCredentials(req, res, next) {
+  try { res.json({ user: await auth.updateOwnCredentials(req.user.sub, req.body), message: 'Credentials changed successfully.' }); } catch (error) { next(error); }
+}
+
+async function notifications(req, res, next) {
+  try { res.json({ notifications: await auth.getNotifications(req.user.sub) }); } catch (error) { next(error); }
 }
 
 /** Authenticates a user and returns the user profile with tokens. */
@@ -39,4 +73,4 @@ async function me(req, res, next) {
   try { res.json({ user: await auth.getProfile(req.user.sub) }); } catch (error) { next(error); }
 }
 
-export { register, createStaff, login, refresh, logout, me };
+export { register, registerStaff, createStaff, updateStaffCredentials, listStaffAccounts, resetStaffPassword, setStaffStatus, setStaffRole, updateOwnCredentials, notifications, login, refresh, logout, me };

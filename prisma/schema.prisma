@@ -40,10 +40,12 @@ model User {
   constituency  String?
   agencyId      String?
   isActive      Boolean        @default(true)
+  passwordChangedAt DateTime?
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
   refreshTokens RefreshToken[]
   auditLogs     AuditLog[]
+  notifications Notification[]
 }
 
 model RefreshToken {
@@ -83,3 +85,17 @@ model AuditLog {
 
   @@index([userId, createdAt])
 }
+
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String
+  message   String
+  type      String    @default("ACCOUNT")
+  readAt    DateTime?
+  createdAt DateTime  @default(now())
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, readAt, createdAt])
+}
+
+ 
